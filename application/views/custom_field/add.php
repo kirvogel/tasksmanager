@@ -48,11 +48,26 @@
 			<textarea name="possible_values" class="form-control" id="possible_values"><?php echo $this->input->post('possible_values'); ?></textarea>
 		</div>
 	</div>
-	
+	<div class="form-group">
+		<label for="status" class="col-md-4 control-label">
+				select trackers</label>
+		<div class="col-md-8">
+			<select name="tracker" class="form-control" multiple="multiple">
+				<?php 
+				foreach($trackers as $tracker)
+				{
+
+					echo '<option value="'.$tracker['id'].'" >'.$tracker['name'].'</option>';
+				} 
+				?>
+			</select>
+		</div>
+	</div>
 	<div class="form-group">
 		<div class="col-sm-offset-4 col-sm-8">
 			<button type="submit" class="btn btn-success">Save</button>
         </div>
 	</div>
+	
 
 <?php echo form_close(); ?>

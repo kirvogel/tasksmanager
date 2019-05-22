@@ -9,6 +9,7 @@ class Commentary extends CI_Controller{
     {
         parent::__construct();
         $this->load->model('Commentary_model');
+        $this->load->model('User_model');
     } 
 
     /*
@@ -17,7 +18,6 @@ class Commentary extends CI_Controller{
     function index()
     {
         $data['commentaries'] = $this->Commentary_model->get_all_commentaries();
-        
         $data['_view'] = 'commentary/index';
         $this->load->view('layouts/main',$data);
     }
@@ -69,20 +69,16 @@ class Commentary extends CI_Controller{
         {
             $this->load->library('form_validation');
 
-			$this->form_validation->set_rules('issue_id','Issue Id','required|numeric');
-			$this->form_validation->set_rules('author_id','Author Id','required|numeric');
 			$this->form_validation->set_rules('value','Value','required');
 		
 			if($this->form_validation->run())     
             {   
                 $params = array(
-					'issue_id' => $this->input->post('issue_id'),
-					'author_id' => $this->input->post('author_id'),
 					'value' => $this->input->post('value'),
                 );
 
                 $this->Commentary_model->update_commentary($id,$params);            
-                redirect('commentary/index');
+                redirect('issue/view/'.$data['commentary']['issue_id']);
             }
             else
             {
@@ -105,16 +101,23 @@ class Commentary extends CI_Controller{
      */
     function remove($id)
     {
-        $commentary = $this->Commentary_model->get_commentary($id);
+		if ((null !== $this->session->userdata('user') && ($user = $this->session->userdata('user'))['admin'] == 1)) {
+			$commentary = $this->Commentary_model->get_commentary($id);
 
-        // check if the commentary exists before trying to delete it
-        if(isset($commentary['id']))
-        {
-            $this->Commentary_model->delete_commentary($id);
-            redirect('commentary/index');
-        }
-        else
-            show_error('The commentary you are trying to delete does not exist.');
+			// check if the commentary exists before trying to delete it
+			if(isset($commentary['id']))
+			{
+				$this->Commentary_model->delete_commentary($id);     
+				echo 'deleted';      
+				redirect('issue/view/'.$commentary['issue_id']);
+			}
+			else
+				show_error('The commentary you are trying to delete does not exist.');
+		} else {
+			
+				$this->session->set_flashdata('error_msg', 'You can\' open requested page.');
+				redirect('issue/view/'.$commentary['issue_id']);
+		}
     }
     
 }

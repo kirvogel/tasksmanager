@@ -9,6 +9,8 @@ class Custom_field extends CI_Controller{
     {
         parent::__construct();
         $this->load->model('Custom_field_model');
+        $this->load->model('Custom_fields_tracker_model');
+        $this->load->model('Tracker_model');
     } 
 
     /*
@@ -27,13 +29,14 @@ class Custom_field extends CI_Controller{
      */
     function add()
     {   
+        $data['trackers'] = $this->Tracker_model->get_all_trackers();
         if(isset($_POST) && count($_POST) > 0)     
         {   
             $params = array(
-				'is_required' => $this->input->post('is_required'),
-				'is_filter' => $this->input->post('is_filter'),
-				'is_searcheable' => $this->input->post('is_searcheable'),
-				'is_multiple' => $this->input->post('is_multiple'),
+				'is_required' => $this->input->post('is_required') == null ? 0 : 1,
+				'is_filter' => $this->input->post('is_filter') == null ? 0 : 1,
+				'is_searcheable' => $this->input->post('is_searcheable') == null ? 0 : 1,
+				'is_multiple' => $this->input->post('is_multiple') == null ? 0 : 1,
 				'type' => $this->input->post('type'),
 				'name' => $this->input->post('name'),
 				'default_value' => $this->input->post('default_value'),

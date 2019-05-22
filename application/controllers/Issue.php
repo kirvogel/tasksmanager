@@ -10,6 +10,11 @@ class Issue extends CI_Controller{
         parent::__construct();
         $this->load->model('Issue_model');
          $this->load->model('Commentary_model');
+         
+         $this->load->model('User_model');
+         $this->load->model('Version_model');
+         
+        $this->load->library('form_validation');
     } 
 
     /*
@@ -36,6 +41,16 @@ class Issue extends CI_Controller{
 			$data['all_trackers'] = $this->Tracker_model->get_all_trackers();
 			$data['all_users'] = $this->User_model->get_all_users();
 		$data['_view'] = 'issue/view';
+		$data['commentaries'] = $this->Commentary_model->get_issue_commentary($id);
+		$data['versions'] = $this->Version_model-> get_version_issue($id);
+        foreach ($data['commentaries'] as $key => $value) {
+			$data['commentaries'][$key]['author'] = $this->User_model->get_user($value['author_id'])['login'];
+		}
+		foreach ($data['versions'] as $key => $value) {
+			$data['versions'][$key]['changer_login'] = $this->User_model->get_user($value['changer_id'])['login'];
+			$data['versions'][$key]['assigned_login'] = $this->User_model->get_user($value['assigned_to_id'])['login'];
+			$data['versions'][$key]['tracker_name'] = $this->Tracker_model->get_tracker($value['tracker_id'])['name'];
+		}
                 $this->load->view('layouts/main',$data);
 	}
 
@@ -101,6 +116,7 @@ class Issue extends CI_Controller{
                 $params = array(
 					'author' => $this->input->post('author'),
 					'status' => $this->input->post('status'),
+					'lock_version' => 0,
 					'assigned_to_id' => $this->input->post('assigned_to_id'),
 					'tracker_id' => $this->input->post('tracker_id'),
 					'last_changer' => $this->input->post('last_changer'),
@@ -157,18 +173,22 @@ class Issue extends CI_Controller{
     function add_comment($ne_id)
     {
         // get a post id based on news id
-        $issue = $this->Issue_model->get_issue($id);
+        $issue = $this->Issue_model->get_issue($ne_id);
         //set validation rules
-        $this->form_validation->set_rules('comment_name', 'Name', 'required|trim|htmlspecialchars');
         $this->form_validation->set_rules('comment_body', 'comment_body', 'required|trim|htmlspecialchars');
         if ($this->form_validation->run() == FALSE) {
             // if not valid load comments
             $this->session->set_flashdata('error_msg', validation_errors());
-            redirect("news/show_one/$ne_id");
+            redirect("issue/view/$ne_id");
         } else {
             //if valid send comment to admin to tak approve
-            $this->comment_model->add_new_comment();
-            redirect("news/show_one/$ne_id");
+            $params = array(
+					'issue_id' => $ne_id,
+					'author_id' => ($user = $this->session->userdata('user'))['id'],
+					'value' => $this->input->post('comment_body'),
+                );
+            $this->Commentary_model->add_commentary($params);
+            redirect("issue/view/$ne_id");
         }
     }
     

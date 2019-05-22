@@ -18,6 +18,11 @@ class Version_model extends CI_Model
     {
         return $this->db->get_where('versions',array('id'=>$id))->row_array();
     }
+    
+    function get_version_issue($issue_id)
+    {
+        return $this->db->get_where('versions',array('issue_id'=>$issue_id))->result_array();
+    }
         
     /*
      * Get all versions

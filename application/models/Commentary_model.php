@@ -18,6 +18,11 @@ class Commentary_model extends CI_Model
     {
         return $this->db->get_where('commentaries',array('id'=>$id))->row_array();
     }
+    
+    function get_issue_commentary($id)
+    {
+        return $this->db->get_where('commentaries',array('issue_id'=>$id))->result_array();
+    }
         
     /*
      * Get all commentaries

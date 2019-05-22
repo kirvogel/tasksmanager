@@ -30,8 +30,8 @@ class Tracker extends CI_Controller{
         if(isset($_POST) && count($_POST) > 0)     
         {   
             $params = array(
-				'is_custom' => $this->input->post('is_custom'),
-				'is_useable' => $this->input->post('is_useable'),
+				'is_custom' => null == $this->input->post('is_custom') ? 0 : 1,
+				'is_useable' => null == $this->input->post('is_useable') ? 0 : 1,
 				'name' => $this->input->post('name'),
             );
             

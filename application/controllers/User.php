@@ -9,6 +9,7 @@ class User extends CI_Controller{
     {
         parent::__construct();
         $this->load->model('User_model');
+        $this->load->model('Issue_model');
     } 
 
     /*
@@ -25,10 +26,13 @@ class User extends CI_Controller{
     public function account(){
         $data = array();
         if($this->session->userdata('isUserLoggedIn')){
+			$user = $this->session->userdata('user');
+			$data['issues'] = $this->Issue_model->get_issue_params(array('assigned_to_id' => $user['id']));
             $data['user'] = $this->User_model->get_user($this->session->userdata('userId'));
             $this->session->set_userdata($data);
             //load the view
             $dat['_view'] = 'user/account';
+            $dat['issues'] = $data['issues'];
 			$this->load->view('layouts/main',$dat);
         }else{
             redirect('user/login');

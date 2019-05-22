@@ -1,39 +1,8 @@
+<?php if (null !== $this->session->userdata('user') && ($user = $this->session->userdata('user'))['admin'] == 1) : ?>
+
 <?php echo form_open('commentary/edit/'.$commentary['id'],array("class"=>"form-horizontal")); ?>
 
-	<div class="form-group">
-		<label for="issue_id" class="col-md-4 control-label"><span class="text-danger">*</span>Issue</label>
-		<div class="col-md-8">
-			<select name="issue_id" class="form-control">
-				<option value="">select issue</option>
-				<?php 
-				foreach($all_issues as $issue)
-				{
-					$selected = ($issue['id'] == $commentary['issue_id']) ? ' selected="selected"' : "";
 
-					echo '<option value="'.$issue['id'].'" '.$selected.'>'.$issue['id'].'</option>';
-				} 
-				?>
-			</select>
-			<span class="text-danger"><?php echo form_error('issue_id');?></span>
-		</div>
-	</div>
-	<div class="form-group">
-		<label for="author_id" class="col-md-4 control-label"><span class="text-danger">*</span>User</label>
-		<div class="col-md-8">
-			<select name="author_id" class="form-control">
-				<option value="">select user</option>
-				<?php 
-				foreach($all_users as $user)
-				{
-					$selected = ($user['id'] == $commentary['author_id']) ? ' selected="selected"' : "";
-
-					echo '<option value="'.$user['id'].'" '.$selected.'>'.$user['firstname'].'</option>';
-				} 
-				?>
-			</select>
-			<span class="text-danger"><?php echo form_error('author_id');?></span>
-		</div>
-	</div>
 	<div class="form-group">
 		<label for="value" class="col-md-4 control-label"><span class="text-danger">*</span>Value</label>
 		<div class="col-md-8">
@@ -49,3 +18,7 @@
 	</div>
 	
 <?php echo form_close(); ?>
+
+<?php else : ?>
+<center><h2>Вы не можете просматривать эту страницу.</h2></center>
+<?php endif; ?>   

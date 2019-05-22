@@ -18,6 +18,11 @@ class Issue_model extends CI_Model
     {
         return $this->db->get_where('issues',array('id'=>$id))->row_array();
     }
+    
+    function get_issue_params($params)
+    {
+        return $this->db->get_where('issues',$params)->result_array();
+    }
         
     /*
      * Get all issues
